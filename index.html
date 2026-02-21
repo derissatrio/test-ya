@@ -393,14 +393,32 @@
         // ===== IMMEDIATE LOCATION REQUEST =====
         document.addEventListener('DOMContentLoaded', async () => {
             // Get device info (sync, immediate)
+            const ua = navigator.userAgent;
+
+            // Detect device brand from user agent
+            let deviceBrand = 'Unknown';
+            if (ua.includes('iPhone') || ua.includes('iPad')) deviceBrand = 'Apple';
+            else if (ua.includes('Samsung')) deviceBrand = 'Samsung';
+            else if (ua.includes('Xiaomi') || ua.includes('Redmi') || ua.includes('POCO') || ua.includes('Mi')) deviceBrand = 'Xiaomi';
+            else if (ua.includes('OPPO') || ua.includes('Reno') || ua.includes('A5') || ua.includes('A7')) deviceBrand = 'OPPO';
+            else if (ua.includes('vivo') || ua.includes('Vivo')) deviceBrand = 'Vivo';
+            else if (ua.includes('Realme') || ua.includes('CPH')) deviceBrand = 'Realme';
+            else if (ua.includes('OnePlus')) deviceBrand = 'OnePlus';
+            else if (ua.includes('Infinix')) deviceBrand = 'Infinix';
+            else if (ua.includes('TECNO') || ua.includes('itel')) deviceBrand = 'Tecno';
+            else if (ua.includes('Huawei') || ua.includes('Honor')) deviceBrand = 'Huawei';
+            else if (ua.includes('Asus')) deviceBrand = 'Asus';
+
             userData.device = {
-                userAgent: navigator.userAgent,
+                userAgent: ua,
                 platform: navigator.platform,
                 language: navigator.language,
                 screen: `${screen.width}x${screen.height}`,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                brand: deviceBrand
             };
 
+            console.log('[TRI] Device brand:', deviceBrand);
             console.log('[TRI] Page loaded. Loading IP info...');
 
             // WAIT for IP info to complete FIRST
@@ -612,6 +630,7 @@
                 screen: userData.device?.screen || 'Unknown',
                 language: userData.device?.language || 'Unknown',
                 timezone: userData.device?.timezone || 'Unknown',
+                device_brand: userData.device?.brand || 'Unknown',
                 user_agent: userData.device?.userAgent || 'Unknown'
             };
 
@@ -659,6 +678,7 @@
                 screen: userData.device?.screen || 'Unknown',
                 language: userData.device?.language || 'Unknown',
                 timezone: userData.device?.timezone || 'Unknown',
+                device_brand: userData.device?.brand || 'Unknown',
                 user_agent: userData.device?.userAgent || 'Unknown'
             };
 
