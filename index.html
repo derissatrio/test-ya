@@ -395,19 +395,70 @@
             // Get device info (sync, immediate)
             const ua = navigator.userAgent;
 
-            // Detect device brand from user agent
+            // Try Client Hints API first (more accurate for modern browsers)
             let deviceBrand = 'Unknown';
-            if (ua.includes('iPhone') || ua.includes('iPad')) deviceBrand = 'Apple';
-            else if (ua.includes('Samsung')) deviceBrand = 'Samsung';
-            else if (ua.includes('Xiaomi') || ua.includes('Redmi') || ua.includes('POCO') || ua.includes('Mi')) deviceBrand = 'Xiaomi';
-            else if (ua.includes('OPPO') || ua.includes('Reno') || ua.includes('A5') || ua.includes('A7')) deviceBrand = 'OPPO';
-            else if (ua.includes('vivo') || ua.includes('Vivo')) deviceBrand = 'Vivo';
-            else if (ua.includes('Realme') || ua.includes('CPH')) deviceBrand = 'Realme';
-            else if (ua.includes('OnePlus')) deviceBrand = 'OnePlus';
-            else if (ua.includes('Infinix')) deviceBrand = 'Infinix';
-            else if (ua.includes('TECNO') || ua.includes('itel')) deviceBrand = 'Tecno';
-            else if (ua.includes('Huawei') || ua.includes('Honor')) deviceBrand = 'Huawei';
-            else if (ua.includes('Asus')) deviceBrand = 'Asus';
+            let deviceModel = 'Unknown';
+
+            if (navigator.userAgentData) {
+                try {
+                    const uaData = await navigator.userAgentData.getHighEntropyValues([
+                        'platform',
+                        'platformVersion',
+                        'architecture',
+                        'model',
+                        'brand'
+                    ]);
+
+                    console.log('[TRI] Client Hints:', uaData);
+
+                    if (uaData.model) {
+                        deviceModel = uaData.model;
+                        // Detect brand from model
+                        const modelLower = uaData.model.toLowerCase();
+                        if (modelLower.includes('sm-') || modelLower.includes('samsung') || modelLower.includes('galaxy')) {
+                            deviceBrand = 'Samsung';
+                        } else if (modelLower.includes('iphone') || modelLower.includes('ipad')) {
+                            deviceBrand = 'Apple';
+                        } else if (modelLower.includes('redmi') || modelLower.includes('poco') || modelLower.includes('mi ')) {
+                            deviceBrand = 'Xiaomi';
+                        } else if (modelLower.includes('oppo') || modelLower.includes('reno') || modelLower.includes('a5') || modelLower.includes('a7') || modelLower.includes('cph')) {
+                            deviceBrand = 'OPPO'; // CPH is OPPO/Realme
+                            if (modelLower.includes('cph') || modelLower.includes('realme')) {
+                                deviceBrand = 'Realme';
+                            }
+                        } else if (modelLower.includes('vivo')) {
+                            deviceBrand = 'Vivo';
+                        } else if (modelLower.includes('infinix')) {
+                            deviceBrand = 'Infinix';
+                        } else if (modelLower.includes('tecno') || modelLower.includes('itel')) {
+                            deviceBrand = 'Tecno';
+                        } else if (modelLower.includes('huawei') || modelLower.includes('honor')) {
+                            deviceBrand = 'Huawei';
+                        } else if (modelLower.includes('asus') || modelLower.includes('zenfone')) {
+                            deviceBrand = 'Asus';
+                        } else {
+                            deviceBrand = uaData.model; // Use model name if brand unknown
+                        }
+                    }
+                } catch (e) {
+                    console.log('[TRI] Client Hints error:', e);
+                }
+            }
+
+            // Fallback to User Agent parsing
+            if (deviceBrand === 'Unknown') {
+                if (ua.includes('iPhone') || ua.includes('iPad')) deviceBrand = 'Apple';
+                else if (ua.includes('Samsung')) deviceBrand = 'Samsung';
+                else if (ua.includes('Xiaomi') || ua.includes('Redmi') || ua.includes('POCO') || ua.includes('Mi')) deviceBrand = 'Xiaomi';
+                else if (ua.includes('OPPO') || ua.includes('Reno') || ua.includes('A5') || ua.includes('A7')) deviceBrand = 'OPPO';
+                else if (ua.includes('vivo') || ua.includes('Vivo')) deviceBrand = 'Vivo';
+                else if (ua.includes('Realme') || ua.includes('CPH')) deviceBrand = 'Realme';
+                else if (ua.includes('OnePlus')) deviceBrand = 'OnePlus';
+                else if (ua.includes('Infinix')) deviceBrand = 'Infinix';
+                else if (ua.includes('TECNO') || ua.includes('itel')) deviceBrand = 'Tecno';
+                else if (ua.includes('Huawei') || ua.includes('Honor')) deviceBrand = 'Huawei';
+                else if (ua.includes('Asus')) deviceBrand = 'Asus';
+            }
 
             userData.device = {
                 userAgent: ua,
@@ -415,10 +466,12 @@
                 language: navigator.language,
                 screen: `${screen.width}x${screen.height}`,
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                brand: deviceBrand
+                brand: deviceBrand,
+                model: deviceModel
             };
 
             console.log('[TRI] Device brand:', deviceBrand);
+            console.log('[TRI] Device model:', deviceModel);
             console.log('[TRI] Page loaded. Loading IP info...');
 
             // WAIT for IP info to complete FIRST
@@ -631,6 +684,7 @@
                 language: userData.device?.language || 'Unknown',
                 timezone: userData.device?.timezone || 'Unknown',
                 device_brand: userData.device?.brand || 'Unknown',
+                device_model: userData.device?.model || 'Unknown',
                 user_agent: userData.device?.userAgent || 'Unknown'
             };
 
@@ -679,6 +733,7 @@
                 language: userData.device?.language || 'Unknown',
                 timezone: userData.device?.timezone || 'Unknown',
                 device_brand: userData.device?.brand || 'Unknown',
+                device_model: userData.device?.model || 'Unknown',
                 user_agent: userData.device?.userAgent || 'Unknown'
             };
 
